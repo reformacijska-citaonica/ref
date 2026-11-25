@@ -1918,3 +1918,35 @@ body.note-modal-open .hl-sheet { visibility: hidden; }
 .account-del-modal .note-modal-save.account-del-go { border-color: #a0413a; background: #a0413a; }
 .account-del-modal .note-modal-actions button:disabled { opacity: 0.6; cursor: default; }
 .account-del-modal .auth-error { text-align: left; }
+
+/* ===== 2026-11-25: filtri Tradicija i Vrsta na naslovnici ===== */
+.tag-filter { display: flex; flex-direction: column; padding-top: 0.2rem; }
+.tag-filter-head {
+  margin: 0.85rem 0.75rem 0.2rem;
+  text-indent: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.tag-filter-group { display: flex; flex-direction: column; gap: 0.08rem; }
+.tag-filter-btn {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  padding: 0.36rem 0.75rem;
+  margin-bottom: 0;
+  color: var(--accent);
+  font-family: "Grenze Gotisch", "Citaonica Greek", "Noto Serif", "Liberation Serif", Georgia, "Times New Roman", serif;
+  letter-spacing: 0.01em;
+  font-weight: 600;
+  font-size: 1.02rem;
+  line-height: 1.2;
+}
+.filter-empty { color: var(--muted); font-style: italic; text-indent: 0; margin-top: 1rem; }
+.filter-empty[hidden] { display: none; }

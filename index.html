@@ -32,6 +32,23 @@
       <button type="button" class="shelf-item lang-filter-btn" data-filter="sr" role="tab" aria-selected="false">Knjige na Srpskom</button>
       <button type="button" class="shelf-item lang-filter-btn" data-filter="en" role="tab" aria-selected="false">Knjige na Engleskom</button>
     </div>
+    <div class="tag-filter" id="tag-filter">
+      <p class="tag-filter-head">Tradicija</p>
+      <div class="tag-filter-group" data-group="trad" role="group" aria-label="Tradicija">
+        <button type="button" class="shelf-item tag-filter-btn" data-value="anglikanci" aria-pressed="false">Anglikanci</button>
+        <button type="button" class="shelf-item tag-filter-btn" data-value="baptisti" aria-pressed="false">Baptisti</button>
+        <button type="button" class="shelf-item tag-filter-btn" data-value="luterani" aria-pressed="false">Luterani</button>
+        <button type="button" class="shelf-item tag-filter-btn" data-value="reformirani" aria-pressed="false">Reformirani</button>
+      </div>
+      <p class="tag-filter-head">Vrsta</p>
+      <div class="tag-filter-group" data-group="kind" role="group" aria-label="Vrsta">
+        <button type="button" class="shelf-item tag-filter-btn" data-value="vjeroispovijedi" aria-pressed="false">Vjeroispovijedi i katekizmi</button>
+        <button type="button" class="shelf-item tag-filter-btn" data-value="sustavna" aria-pressed="false">Sustavna teologija</button>
+        <button type="button" class="shelf-item tag-filter-btn" data-value="poboznost" aria-pressed="false">Pobožnost</button>
+        <button type="button" class="shelf-item tag-filter-btn" data-value="rasprave" aria-pressed="false">Rasprave i apologetika</button>
+        <button type="button" class="shelf-item tag-filter-btn" data-value="povijest" aria-pressed="false">Povijest</button>
+      </div>
+    </div>
   </nav>
   <div id="account-slot" class="account-slot">
     <div class="markup-block">
@@ -54,170 +71,171 @@
   <main class="wrap catalog-home">
     <h1>Knjige</h1>
     <div class="book-grid">
-      <a class="book-card" data-lang="hr" href="knjige/davenant/hr.html">
+      <a class="book-card" data-lang="hr" data-trad="anglikanci reformirani" data-kind="rasprave" href="knjige/davenant/hr.html">
         <h2>Rasprava o smrti Kristovoj</h2>
         <p class="sub">s obzirom na njezin opseg i posebne dobrobiti</p>
         <p class="meta">John Davenant · prijevod Boris Dželajlija</p>
       </a>
-      <a class="book-card" data-lang="hr" href="knjige/mastricht/uvod.html">
+      <a class="book-card" data-lang="hr" data-trad="reformirani" data-kind="sustavna" href="knjige/mastricht/uvod.html">
         <h2>Teoretsko-praktična teologija</h2>
         <p class="sub">Cjelovito izdanje</p>
         <p class="meta">Petrus van Mastricht · prijevod Boris Dželajlija</p>
       </a>
-      <a class="book-card" data-lang="hr" href="knjige/chemnitz/uvod.html">
+      <a class="book-card" data-lang="hr" data-trad="luterani" data-kind="sustavna" href="knjige/chemnitz/uvod.html">
         <h2>Loci theologici</h2>
         <p class="sub">Glavne teme kršćanskog nauka</p>
         <p class="meta">Martin Chemnitz · prijevod Boris Dželajlija</p>
       </a>
 
 
-      <a class="book-card" data-lang="hr" href="knjige/masaryk-ceski-preporod-hr.html">
+      <a class="book-card" data-lang="hr" data-trad="" data-kind="povijest" href="knjige/masaryk-ceski-preporod-hr.html">
         <h2>Češki preporod i češka reformacija</h2>
         <p class="sub">Jan Hus</p>
         <p class="meta">T. G. Masaryk · prev. Milan Prelog</p>
       </a>
 
-      <a class="book-card" data-lang="hr" href="knjige/belgijsko/uvod.html">
+      <a class="book-card" data-lang="hr" data-trad="reformirani" data-kind="vjeroispovijedi" href="knjige/belgijsko/uvod.html">
         <h2>Belgijsko vjeroispovijedanje (1561.)</h2>
         <p class="sub">revidirano na nacionalnoj sinodi u Dordrechtu 1618. i 1619.</p>
         <p class="meta">prijevod Melanie Ivančević · KC „Dobroga pastira“ i RTI „Mihael Starin“, 2008.</p>
       </a>
 
-      <a class="book-card" data-lang="hr" href="knjige/heidelberski-katekizam-hr/uvod.html">
+      <a class="book-card" data-lang="hr" data-trad="reformirani" data-kind="vjeroispovijedi" href="knjige/heidelberski-katekizam-hr/uvod.html">
         <h2>Katekizam Reformirane Crkve</h2>
         <p class="sub">Heidelberški katekizam</p>
         <p class="meta">Ursinus i Olevianus · reformator.hr</p>
       </a>
 
-      <a class="book-card" data-lang="hr" href="knjige/helvetsko-vjeroispovijedanje/uvod.html">
+      <a class="book-card" data-lang="hr" data-trad="reformirani" data-kind="vjeroispovijedi" href="knjige/helvetsko-vjeroispovijedanje/uvod.html">
         <h2>Vjeroispovijedanje Reformirane Crkve</h2>
         <p class="sub">Drugo helvetsko vjeroispovijedanje (1566.)</p>
         <p class="meta">Heinrich Bullinger · reformator.hr</p>
       </a>
 
-      <a class="book-card" data-lang="hr" href="knjige/westminsterska-ispovijed/uvod.html">
+      <a class="book-card" data-lang="hr" data-trad="reformirani" data-kind="vjeroispovijedi" href="knjige/westminsterska-ispovijed/uvod.html">
         <h2>Westminsterska ispovijed vjere</h2>
         <p class="sub">u američkoj reviziji iz 1788.</p>
         <p class="meta">Westminsterska skupština teologa</p>
       </a>
 
-      <a class="book-card" data-lang="hr" href="knjige/augsburska-vjeroispovijest/uvod.html">
+      <a class="book-card" data-lang="hr" data-trad="luterani" data-kind="vjeroispovijedi" href="knjige/augsburska-vjeroispovijest/uvod.html">
         <h2>Augsburška vjeroispovijest</h2>
         <p class="sub">Confessio Augustana, 1530.</p>
         <p class="meta">Filip Melanchthon</p>
       </a>
 
-      <a class="book-card" data-lang="sr" href="knjige/davenant/sr.html">
+      <a class="book-card" data-lang="sr" data-trad="anglikanci reformirani" data-kind="rasprave" href="knjige/davenant/sr.html">
         <h2>Расправа о смрти Христовој</h2>
         <p class="sub">с обзиром на њен опсег и посебне користи</p>
         <p class="meta">Џон Давенант · превод Борис Џелајлија</p>
       </a>
-      <a class="book-card" data-lang="sr" href="knjige/mastricht-sr/uvod.html">
+      <a class="book-card" data-lang="sr" data-trad="reformirani" data-kind="sustavna" href="knjige/mastricht-sr/uvod.html">
         <h2>Теоретско-практична теологија</h2>
         <p class="sub">Целовито издање</p>
         <p class="meta">Петрус ван Мастрихт · превод Борис Џелајлија</p>
       </a>
 
-      <a class="book-card" data-lang="en" href="knjige/davenant/en.html">
+      <a class="book-card" data-lang="en" data-trad="anglikanci reformirani" data-kind="rasprave" href="knjige/davenant/en.html">
         <h2>A Dissertation on the Death of Christ</h2>
         <p class="sub">as to its extent and special benefits</p>
         <p class="meta">John Davenant</p>
       </a>
 
-      <a class="book-card" data-lang="en" href="knjige/hooker/preface.html">
+      <a class="book-card" data-lang="en" data-trad="anglikanci" data-kind="rasprave" href="knjige/hooker/preface.html">
         <h2>Of the Laws of Ecclesiastical Polity</h2>
         <p class="sub">Books I–VIII</p>
         <p class="meta">Richard Hooker</p>
       </a>
-      <a class="book-card" data-lang="hr" href="knjige/39-clanaka-hr.html">
+      <a class="book-card" data-lang="hr" data-trad="anglikanci" data-kind="vjeroispovijedi" href="knjige/39-clanaka-hr.html">
         <h2>Trideset i devet članaka vjere</h2>
         <p class="sub">Anglikanske crkve</p>
         <p class="meta">Thomas Cranmer</p>
       </a>
-      <a class="book-card" data-lang="sr" href="knjige/39-clanova-sr.html">
+      <a class="book-card" data-lang="sr" data-trad="anglikanci" data-kind="vjeroispovijedi" href="knjige/39-clanova-sr.html">
         <h2>Тридесет и девет чланова вере</h2>
         <p class="sub">Англиканске цркве</p>
         <p class="meta">Томас Кранмер · Ипостас</p>
       </a>
-      <a class="book-card" data-lang="sr" href="knjige/heidelberg-sr.html">
+      <a class="book-card" data-lang="sr" data-trad="reformirani" data-kind="vjeroispovijedi" href="knjige/heidelberg-sr.html">
         <h2>Хајделбершки катихизис</h2>
         <p class="sub">1563 · Ипостас, 2024</p>
         <p class="meta">Уршин и Олевианус</p>
       </a>
-      <a class="book-card" data-lang="en" href="knjige/perkins-art-en.html">
+      <a class="book-card" data-lang="en" data-trad="anglikanci" data-kind="" href="knjige/perkins-art-en.html">
         <h2>The Art of Prophesying</h2>
         <p class="sub">A treatise on the manner of preaching</p>
         <p class="meta">William Perkins</p>
       </a>
-      <a class="book-card" data-lang="en" href="knjige/jewel-apology-en.html">
+      <a class="book-card" data-lang="en" data-trad="anglikanci" data-kind="rasprave" href="knjige/jewel-apology-en.html">
         <h2>The Apology of the Church of England</h2>
         <p class="sub">An answer in defence of the Church of England</p>
         <p class="meta">John Jewel</p>
       </a>
-      <a class="book-card" data-lang="en" href="knjige/perkins-reformed-catholic-en.html">
+      <a class="book-card" data-lang="en" data-trad="anglikanci" data-kind="rasprave" href="knjige/perkins-reformed-catholic-en.html">
         <h2>A Reformed Catholic</h2>
         <p class="sub">How near we may come to Rome, and wherein we must depart</p>
         <p class="meta">William Perkins</p>
       </a>
-      <a class="book-card" data-lang="en" href="knjige/perkins-golden-chain-en.html">
+      <a class="book-card" data-lang="en" data-trad="anglikanci" data-kind="sustavna" href="knjige/perkins-golden-chain-en.html">
         <h2>A Golden Chain</h2>
         <p class="sub">The description of theology</p>
         <p class="meta">William Perkins</p>
       </a>
-      <a class="book-card" data-lang="en" href="knjige/taylor-holy-living-en.html">
+      <a class="book-card" data-lang="en" data-trad="anglikanci" data-kind="poboznost" href="knjige/taylor-holy-living-en.html">
         <h2>The Rule and Exercises of Holy Living</h2>
         <p class="sub">Means of obtaining every virtue, and remedies against every vice</p>
         <p class="meta">Jeremy Taylor</p>
       </a>
-      <a class="book-card" data-lang="en" href="knjige/taylor-holy-dying-en.html">
+      <a class="book-card" data-lang="en" data-trad="anglikanci" data-kind="poboznost" href="knjige/taylor-holy-dying-en.html">
         <h2>The Rule and Exercises of Holy Dying</h2>
         <p class="sub">Preparing ourselves and others for a blessed death</p>
         <p class="meta">Jeremy Taylor</p>
       </a>
-      <a class="book-card" data-lang="en" href="knjige/butler/preface.html">
+      <a class="book-card" data-lang="en" data-trad="anglikanci" data-kind="rasprave" href="knjige/butler/preface.html">
         <h2>The Analogy of Religion</h2>
         <p class="sub">Natural and Revealed, to the Constitution and Course of Nature</p>
         <p class="meta">Joseph Butler</p>
       </a>
     
-      <a class="book-card" data-lang="en" href="knjige/concord/preface.html">
+      <a class="book-card" data-lang="en" data-trad="luterani" data-kind="vjeroispovijedi" href="knjige/concord/preface.html">
         <h2>The Book of Concord</h2>
         <p class="sub">The Symbolical Books of the Evangelical Lutheran Church</p>
         <p class="meta">Triglot Concordia, 1917</p>
       </a>
-      <a class="book-card" data-lang="en" href="knjige/arndt/uvod.html">
+      <a class="book-card" data-lang="en" data-trad="luterani" data-kind="poboznost" href="knjige/arndt/uvod.html">
         <h2>True Christianity</h2>
         <p class="sub">A Treatise on Sincere Repentance, True Faith, the Holy Walk of the True Christian</p>
         <p class="meta">Johann Arndt · prev. A. W. Boehm</p>
       </a>
-      <a class="book-card" data-lang="en" href="knjige/knox/uvod.html">
+      <a class="book-card" data-lang="en" data-trad="reformirani" data-kind="povijest" href="knjige/knox/uvod.html">
         <h2>The History of the Reformation of Religion in Scotland</h2>
         <p class="sub">With Which Are Included Knox's Confession and The Book of Discipline</p>
         <p class="meta">John Knox · uredio Cuthbert Lennox</p>
       </a>
-      <a class="book-card" data-lang="en" href="knjige/calvin/uvod.html">
+      <a class="book-card" data-lang="en" data-trad="reformirani" data-kind="sustavna" href="knjige/calvin/uvod.html">
         <h2>Institutes of the Christian Religion</h2>
         <p class="sub">In Four Books</p>
         <p class="meta">John Calvin · prijevod Henry Beveridge</p>
       </a>
-      <a class="book-card" data-lang="en" href="knjige/gill/uvod.html">
+      <a class="book-card" data-lang="en" data-trad="baptisti" data-kind="sustavna" href="knjige/gill/uvod.html">
         <h2>A Body of Doctrinal Divinity</h2>
         <p class="sub">A System of Evangelical Truths, Deduced from the Sacred Scriptures</p>
         <p class="meta">John Gill</p>
       </a>
 
-      <a class="book-card" data-lang="en" href="knjige/brekell/uvod.html">
+      <a class="book-card" data-lang="en" data-trad="" data-kind="rasprave" href="knjige/brekell/uvod.html">
         <h2>Paedo-Baptism</h2>
         <p class="sub">Three tracts against Dr. John Gill (London: J. Waugh, 1753–1755)</p>
         <p class="meta">John Brekell</p>
       </a>
 
-      <a class="book-card" data-lang="en" href="knjige/owen/uvod.html">
+      <a class="book-card" data-lang="en" data-trad="reformirani" data-kind="rasprave" href="knjige/owen/uvod.html">
         <h2>The Death of Death in the Death of Christ</h2>
         <p class="sub">A Treatise of the Redemption and Reconciliation That Is in the Blood of Christ</p>
         <p class="meta">John Owen</p>
       </a>
 </div>
+    <p class="filter-empty" id="filter-empty" hidden>Nema knjiga za odabrane filtre.</p>
   </main>
 
 <footer class="site-footer">
@@ -233,34 +251,74 @@
 
 <script>
 (function () {
+  // Filtri na naslovnici: jezik + tradicija + vrsta (kombiniraju se kao I).
+  // Adresa (#lang=…&trad=…&kind=…) mijenja se SAMO na klik; pri učitavanju se samo čita,
+  // jer #access_token=… nakon Google prijave mora ostati netaknut za Supabase.
   var box = document.getElementById("lang-filter");
   if (!box) return;
+  var tagBox = document.getElementById("tag-filter");
   var cards = [].slice.call(document.querySelectorAll(".book-card[data-lang]"));
   var title = document.querySelector(".catalog-home > h1");
+  var empty = document.getElementById("filter-empty");
   var labels = { all: "Knjige", hr: "Knjige na hrvatskom", sr: "Knjige na srpskom", en: "Knjige na engleskom" };
-  function apply(filter, fromUser) {
+  var state = { lang: "all", trad: "", kind: "" };
+  function has(card, attr, val) {
+    return !val || (" " + (card.getAttribute(attr) || "") + " ").indexOf(" " + val + " ") >= 0;
+  }
+  function apply(fromUser) {
     box.querySelectorAll(".lang-filter-btn").forEach(function (btn) {
-      var on = btn.getAttribute("data-filter") === filter;
+      var on = btn.getAttribute("data-filter") === state.lang;
       btn.classList.toggle("is-here", on);
       btn.setAttribute("aria-selected", on ? "true" : "false");
     });
-    cards.forEach(function (card) {
-      var show = filter === "all" || card.getAttribute("data-lang") === filter;
-      card.hidden = !show;
+    if (tagBox) tagBox.querySelectorAll(".tag-filter-group").forEach(function (g) {
+      var cur = state[g.getAttribute("data-group")];
+      g.querySelectorAll(".tag-filter-btn").forEach(function (btn) {
+        var on = btn.getAttribute("data-value") === cur;
+        btn.classList.toggle("is-here", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
     });
-    if (title) title.textContent = labels[filter] || "Knjige";
-    // Samo na klik: pri učitavanju adresa se ne dira, jer #access_token=… nakon Google prijave mora pročitati Supabase.
-    if (fromUser) { try { history.replaceState(null, "", filter === "all" ? location.pathname : "#lang=" + filter); } catch (e) {} }
+    var shown = 0;
+    cards.forEach(function (card) {
+      var show = (state.lang === "all" || card.getAttribute("data-lang") === state.lang) &&
+        has(card, "data-trad", state.trad) && has(card, "data-kind", state.kind);
+      card.hidden = !show;
+      if (show) shown++;
+    });
+    if (empty) empty.hidden = shown > 0;
+    if (title) title.textContent = labels[state.lang] || "Knjige";
+    if (fromUser) {
+      var parts = [];
+      if (state.lang !== "all") parts.push("lang=" + state.lang);
+      if (state.trad) parts.push("trad=" + state.trad);
+      if (state.kind) parts.push("kind=" + state.kind);
+      try { history.replaceState(null, "", parts.length ? "#" + parts.join("&") : location.pathname); } catch (e) {}
+    }
   }
   box.addEventListener("click", function (ev) {
     var btn = ev.target.closest(".lang-filter-btn");
     if (!btn) return;
-    apply(btn.getAttribute("data-filter") || "all", true);
+    state.lang = btn.getAttribute("data-filter") || "all";
+    apply(true);
   });
-  var start = "all";
-  var m = (location.hash || "").match(/lang=(all|hr|sr|en)/);
-  if (m) start = m[1];
-  apply(start);
+  if (tagBox) tagBox.addEventListener("click", function (ev) {
+    var btn = ev.target.closest(".tag-filter-btn");
+    if (!btn) return;
+    var g = btn.closest(".tag-filter-group").getAttribute("data-group");
+    var v = btn.getAttribute("data-value");
+    state[g] = state[g] === v ? "" : v;   // ponovni klik na aktivnu stavku je poništava
+    apply(true);
+  });
+  // Učitavanje: samo čitanje adrese, bez prepisivanja.
+  var h = location.hash || "";
+  var m = h.match(/(?:^#|&)lang=(all|hr|sr|en)(?:&|$)/);
+  if (m) state.lang = m[1];
+  m = h.match(/(?:^#|&)trad=(anglikanci|baptisti|luterani|reformirani)(?:&|$)/);
+  if (m) state.trad = m[1];
+  m = h.match(/(?:^#|&)kind=(vjeroispovijedi|sustavna|poboznost|rasprave|povijest)(?:&|$)/);
+  if (m) state.kind = m[1];
+  apply(false);
 })();
 </script>
 
