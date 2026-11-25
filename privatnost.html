@@ -52,14 +52,14 @@
     <h2>1. Tko je voditelj obrade</h2>
     <p>Voditelj obrade osobnih podataka na stranici <a href="https://reformacijska-citaonica.github.io/ref/">Reformacijska čitaonica</a> je <strong>Boris Dželajlija</strong>. Za sva pitanja o privatnosti i za ostvarivanje svojih prava piši na <a href="mailto:reformacijska.citaonica@gmail.com">reformacijska.citaonica@gmail.com</a>.</p>
     <h2>2. Ukratko</h2>
-    <ul><li>Knjige možeš čitati bez prijave; tada ne prikupljamo nikakve podatke o tebi.</li><li>Prijava preko Googlea potrebna je samo za označavanje teksta i pisanje bilježaka.</li><li>Tvoje oznake i bilješke vidljive su samo tebi. Ne prodajemo ih, ne dijelimo ih i ne koristimo za oglase.</li><li>Nema analitike, oglasa ni kolačića za praćenje.</li></ul>
+    <ul><li>Knjige možeš čitati bez prijave; tada ne prikupljamo nikakve podatke o tebi.</li><li>Prijava preko Googlea potrebna je samo za označavanje teksta i pisanje bilježaka.</li><li>Tvoje oznake i bilješke vidljive su samo tebi. Ne prodajemo ih, ne dijelimo ih i ne koristimo za oglase.</li><li>Nema analitike, oglasa ni kolačića za praćenje.</li><li>Svoje podatke možeš sam preuzeti, a račun obrisati u bilo kojem trenutku.</li></ul>
     <h2>3. Koje podatke obrađujemo</h2>
     <p><strong>Kad se prijaviš preko Googlea</strong> (putem usluge Supabase Auth) spremamo: e-adresu, ime i poveznicu na sliku profila s Google računa, Googleov identifikator računa te tehničke podatke o prijavi (vrijeme prijave i zapise o prijavi, koji mogu sadržavati IP adresu).</p>
     <p><strong>Kad označavaš tekst</strong> spremamo: označeni odlomak, tvoju bilješku (ako je napišeš), boju oznake, knjigu i stranicu na koju se odnosi te vrijeme izmjene. Ti se podaci čuvaju u tablici <em>highlights</em>, zaštićenoj pravilima (RLS) tako da ih može čitati i mijenjati samo vlasnik računa.</p>
     <p><strong>Pri svakom posjetu</strong> tvoj preglednik šalje IP adresu poslužiteljima koji isporučuju stranicu (GitHub Pages) i fontove (Google Fonts) — vidi točku 6.</p>
     <h2>4. Posebna kategorija podataka (vjerska uvjerenja)</h2>
     <p>Bilješke i oznake u teološkim knjigama mogu otkrivati tvoja vjerska uvjerenja, a to je posebna kategorija osobnih podataka (čl. 9. Opće uredbe o zaštiti podataka, GDPR). Takve podatke obrađujemo samo na temelju tvoje <strong>izričite privole</strong> (čl. 9. st. 2. t. (a) GDPR-a), koju daješ prijavom nakon što ti se u prozoru za prijavu prikaže obavijest o tome.</p>
-    <p>Privolu možeš povući u bilo kojem trenutku tako da zatražiš brisanje računa (točka 9). Povlačenje ne utječe na zakonitost obrade prije povlačenja.</p>
+    <p>Privolu možeš povući u bilo kojem trenutku tako da obrišeš račun (točka 10). Povlačenje ne utječe na zakonitost obrade prije povlačenja.</p>
     <h2>5. Svrha i pravna osnova</h2>
     <ul><li><strong>Račun i spremanje oznaka i bilježaka</strong> — da bi ti ih stranica mogla prikazati na svakom uređaju na kojem se prijaviš. Osnova: ugovor, tj. pružanje usluge koju si zatražio (čl. 6. st. 1. t. (b) GDPR-a), i tvoja izričita privola za podatke iz točke 4.</li><li><strong>Isporuka stranice i fontova</strong> (IP adresa u zapisima poslužitelja) — da bi se stranica uopće mogla prikazati i zaštititi od zlouporabe. Osnova: legitimni interes (čl. 6. st. 1. t. (f) GDPR-a).</li></ul>
     <h2>6. Kome se podaci otkrivaju (izvršitelji i treće strane)</h2>
@@ -68,15 +68,18 @@
     <h2>7. Lokalna pohrana u pregledniku i kolačići</h2>
     <p>Stranica u lokalnoj pohrani preglednika (localStorage) čuva samo ono što je nužno za uslugu koju si sam zatražio: podatke o prijavi (sesiju) te tvoje oznake i bilješke, da bi se brzo prikazale. Zato nema natpisa o kolačićima: ne koristimo kolačiće ni pohranu za analitiku, oglase ili praćenje.</p>
     <p>Kad se odjaviš, oznake i bilješke brišu se iz preglednika; ostaju spremljene samo na tvojem računu. Ako se na istom pregledniku prijavi druga osoba, tuđe se oznake ne prenose na njezin račun.</p>
-    <h2>8. Koliko dugo čuvamo podatke</h2>
-    <p>Podaci se čuvaju dok imaš račun. <strong>Računi neaktivni godinu dana brišu se zajedno sa svim oznakama i bilješkama.</strong> Na zahtjev brišemo račun i ranije (točka 9). Zapise poslužitelja i fontova čuvaju GitHub i Google prema svojim pravilima.</p>
-    <h2>9. Tvoja prava</h2>
+    <h2>8. Dobna granica</h2>
+    <p>Za čitanje knjiga račun nije potreban. <strong>Prijava i bilješke namijenjeni su osobama starijima od 16 godina</strong> (dobna granica za privolu u Hrvatskoj, čl. 8. GDPR-a i Zakon o provedbi Opće uredbe o zaštiti podataka). Ako saznamo da je račun otvorila mlađa osoba, račun ćemo obrisati zajedno sa svim oznakama i bilješkama.</p>
+    <h2>9. Koliko dugo čuvamo podatke</h2>
+    <p>Podaci se čuvaju dok imaš račun. <strong>Računi neaktivni godinu dana (bez prijave dulje od godine dana) brišu se automatski, zajedno sa svim oznakama i bilješkama</strong>; provjera se obavlja svaki dan. Račun možeš i sam obrisati u svakom trenutku (točka 10). Zapise poslužitelja i fontova čuvaju GitHub i Google prema svojim pravilima.</p>
+    <h2>10. Tvoja prava</h2>
     <p>Imaš pravo na pristup svojim podacima, ispravak, brisanje („pravo na zaborav”), ograničenje obrade, prenosivost (kopiju svojih oznaka i bilježaka u strojno čitljivom obliku), prigovor obradi te pravo u svakom trenutku povući privolu.</p>
-    <p>Zasad se brisanje računa i izvoz podataka obavljaju na zahtjev: piši s e-adrese kojom se prijavljuješ na <a href="mailto:reformacijska.citaonica@gmail.com">reformacijska.citaonica@gmail.com</a>. Odgovorit ćemo najkasnije u roku od 30 dana.</p>
+    <p><strong>Sam to možeš napraviti:</strong> kad si prijavljen, u bočnoj traci (dio „Označavanje”) nalaze se poveznice <em>Preuzmi moje podatke</em> (preuzima datoteku JSON s tvojom e-adresom, datumom stvaranja računa i svim oznakama i bilješkama) i <em>Obriši račun</em> (nakon potvrde trajno briše račun i sve oznake i bilješke).</p>
+    <p>Zahtjev možeš poslati i e-poštom, s e-adrese kojom se prijavljuješ, na <a href="mailto:reformacijska.citaonica@gmail.com">reformacijska.citaonica@gmail.com</a>. Odgovorit ćemo najkasnije u roku od 30 dana.</p>
     <p>Ako smatraš da se tvoji podaci obrađuju protivno propisima, možeš podnijeti pritužbu <strong>Agenciji za zaštitu osobnih podataka</strong> (AZOP), Ulica Metela Ožegovića 16, 10000 Zagreb, <a href="https://azop.hr">azop.hr</a>, ili nadzornom tijelu u državi EU-a u kojoj živiš.</p>
-    <h2>10. Sigurnost</h2>
+    <h2>11. Sigurnost</h2>
     <p>Promet sa stranicom i bazom ide preko šifrirane veze (HTTPS). Pristup oznakama i bilješkama ograničen je pravilima baze tako da ih vidi samo vlasnik računa. Ako dođe do povrede osobnih podataka, obavijestit ćemo AZOP u roku od 72 sata i, ako je rizik visok, i tebe.</p>
-    <h2>11. Izmjene</h2>
+    <h2>12. Izmjene</h2>
     <p>O bitnim izmjenama ove politike obavijestit ćemo na ovoj stranici; datum zadnje izmjene naveden je na vrhu.</p>
   </main>
 
