@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Политика приватности — Reformacijska čitaonica</title>
+<link rel="stylesheet" href="assets/reader.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@400;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+</head>
+<body class="catalog privacy-page">
+
+<aside class="shelfbar" id="shelfbar" aria-label="Navigacija">
+  <div class="shelfbar-head">
+    <img class="shelf-seal" src="assets/seal-sidebar.png" alt="Reformacijska čitaonica" />
+    <button type="button" class="shelf-close" id="shelf-close" title="Zatvori" aria-label="Zatvori">×</button>
+  </div>
+  <nav class="shelf-list">
+    <a class="shelf-item" href="index.html">
+      <span class="lang">Почетна</span>
+      <span class="ttl">Reformacijska čitaonica</span>
+    </a>
+    <div class="shelf-rule" aria-hidden="true"></div>
+    <a class="shelf-item is-here" href="#top">Политика приватности</a>
+    <a class="shelf-item" href="privatnost.html">Politika privatnosti (hrvatski)</a>
+  </nav>
+  <div id="account-slot" class="account-slot">
+    <div class="markup-block">
+      <p class="markup-kicker">Означавање</p>
+      <button type="button" class="markup-link" id="auth-signin">Пријава</button>
+    </div>
+  </div>
+</aside>
+
+<div class="stage">
+  <div class="topnav">
+    <div class="topnav-inner">
+      <button type="button" class="shelf-open-btn" id="shelf-open" title="Izbornik" aria-label="Izbornik" aria-controls="shelfbar">
+        <span></span><span></span><span></span>
+      </button>
+      <a class="brand brand-fraktur" href="index.html">Reformacijska čitaonica</a>
+    </div>
+  </div>
+
+  <main class="wrap privacy" id="top">
+    <h1>Политика приватности</h1>
+    <p class="privacy-updated">Посљедња измјена: 25. новембра 2026.</p>
+    <h2>1. Ко је руковалац</h2>
+    <p>Руковалац личним подацима на страници <a href="https://reformacijska-citaonica.github.io/ref/">Reformacijska čitaonica</a> је <strong>Борис Џелајлија</strong>. За сва питања о приватности и за остваривање својих права пиши на <a href="mailto:reformacijska.citaonica@gmail.com">reformacijska.citaonica@gmail.com</a>.</p>
+    <h2>2. Укратко</h2>
+    <ul><li>Књиге можеш читати без пријаве; тада не прикупљамо никакве податке о теби.</li><li>Пријава преко Гугла потребна је само за означавање текста и писање биљежака.</li><li>Твоје ознаке и биљешке видљиве су само теби. Не продајемо их, не дијелимо их и не користимо за огласе.</li><li>Нема аналитике, огласа ни колачића за праћење.</li></ul>
+    <h2>3. Које податке обрађујемо</h2>
+    <p><strong>Кад се пријавиш преко Гугла</strong> (путем услуге Supabase Auth) чувамо: е-адресу, име и везу на слику профила с Гугл налога, Гуглов идентификатор налога те техничке податке о пријави (вријеме пријаве и записе о пријави, који могу садржавати IP адресу).</p>
+    <p><strong>Кад означаваш текст</strong> чувамо: означени одломак, твоју биљешку (ако је напишеш), боју ознаке, књигу и страницу на коју се односи те вријеме измјене. Ти се подаци чувају у табели <em>highlights</em>, заштићеној правилима (RLS) тако да их може читати и мијењати само власник налога.</p>
+    <p><strong>При сваком посјету</strong> твој прегледач шаље IP адресу серверима који испоручују страницу (GitHub Pages) и фонтове (Google Fonts) — види тачку 6.</p>
+    <h2>4. Посебна врста података (вјерска увјерења)</h2>
+    <p>Биљешке и ознаке у теолошким књигама могу откривати твоја вјерска увјерења, а то је посебна врста личних података (чл. 9. Опште уредбе о заштити података, GDPR). Такве податке обрађујемо само на основу твог <strong>изричитог пристанка</strong> (чл. 9. ст. 2. т. (а) GDPR-а), који дајеш пријавом након што ти се у прозору за пријаву прикаже обавјештење о томе.</p>
+    <p>Пристанак можеш повући у сваком тренутку тако што затражиш брисање налога (тачка 9). Повлачење не утиче на законитост обраде прије повлачења.</p>
+    <h2>5. Сврха и правни основ</h2>
+    <ul><li><strong>Налог и чување ознака и биљежака</strong> — да би ти их страница могла приказати на сваком уређају на којем се пријавиш. Основ: уговор, тј. пружање услуге коју си затражио (чл. 6. ст. 1. т. (б) GDPR-а), и твој изричити пристанак за податке из тачке 4.</li><li><strong>Испорука странице и фонтова</strong> (IP адреса у записима сервера) — да би се страница уопште могла приказати и заштитити од злоупотребе. Основ: легитимни интерес (чл. 6. ст. 1. т. (ф) GDPR-а).</li></ul>
+    <h2>6. Коме се подаци откривају (обрађивачи и трећа лица)</h2>
+    <ul><li><strong>Supabase</strong> (Supabase Pte. Ltd.) — база података и пријава. Пројекат је смјештен у ЕУ (Њемачка, Франкфурт). Supabase је обрађивач на основу свог Уговора о обради података (DPA). За техничку подршку подаци могу ићи повезаним друштвима ван ЕУ (Сингапур, САД) уз стандардне уговорне клаузуле ЕУ.</li><li><strong>Google</strong> — пријава Гугл налогом. При пријави Гугл обрађује твоје податке према својим правилима приватности (<a href="https://policies.google.com/privacy">policies.google.com/privacy</a>). Страница од Гугла добија само е-адресу, име и слику профила.</li><li><strong>Google Fonts</strong> — фонтови се засад учитавају с Гуглових сервера, па Гугл при сваком посјету види твоју IP адресу и податке о прегледачу.</li><li><strong>GitHub</strong> (GitHub Pages) — сервер на којем је страница. GitHub може водити записе о посјетима, укључујући IP адресу (<a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub-ова изјава о приватности</a>).</li></ul>
+    <p>За преносе у САД Гугл и GitHub ослањају се на Оквир ЕУ и САД за приватност података и/или стандардне уговорне клаузуле. Твоје податке не продајемо и не дајемо никоме другом, осим ако то захтијева закон.</p>
+    <h2>7. Локално складиште у прегледачу и колачићи</h2>
+    <p>Страница у локалном складишту прегледача (localStorage) чува само оно што је нужно за услугу коју си сам затражио: податке о пријави (сесију) те твоје ознаке и биљешке, да би се брзо приказале. Зато нема натписа о колачићима: не користимо колачиће ни складиште за аналитику, огласе или праћење.</p>
+    <p>Кад се одјавиш, ознаке и биљешке бришу се из прегледача; остају сачуване само на твом налогу. Ако се на истом прегледачу пријави друга особа, туђе ознаке се не преносе на њен налог.</p>
+    <h2>8. Колико дуго чувамо податке</h2>
+    <p>Подаци се чувају док имаш налог. <strong>Налози неактивни годину дана бришу се заједно са свим ознакама и биљешкама.</strong> На захтјев бришемо налог и раније (тачка 9). Записе сервера и фонтова чувају GitHub и Google према својим правилима.</p>
+    <h2>9. Твоја права</h2>
+    <p>Имаш право на приступ својим подацима, исправку, брисање („право на заборав”), ограничење обраде, преносивост (копију својих ознака и биљежака у машински читљивом облику), приговор на обраду те право да у сваком тренутку повучеш пристанак.</p>
+    <p>Засад се брисање налога и извоз података обављају на захтјев: пиши с е-адресе којом се пријављујеш на <a href="mailto:reformacijska.citaonica@gmail.com">reformacijska.citaonica@gmail.com</a>. Одговорићемо најкасније у року од 30 дана.</p>
+    <p>Ако сматраш да се твоји подаци обрађују противно прописима, можеш поднијети притужбу хрватској <strong>Агенцији за заштиту личних података</strong> (Agencija za zaštitu osobnih podataka, AZOP), Ulica Metela Ožegovića 16, 10000 Zagreb, <a href="https://azop.hr">azop.hr</a>, или надзорном органу у држави ЕУ у којој живиш.</p>
+    <h2>10. Безбједност</h2>
+    <p>Саобраћај са страницом и базом иде преко шифроване везе (HTTPS). Приступ ознакама и биљешкама ограничен је правилима базе тако да их види само власник налога. Ако дође до повреде личних података, обавијестићемо AZOP у року од 72 сата и, ако је ризик висок, и тебе.</p>
+    <h2>11. Измјене</h2>
+    <p>О битним измјенама ове политике обавијестићемо на овој страници; датум посљедње измјене наведен је на врху.</p>
+  </main>
+
+<footer class="site-footer">
+  <img src="assets/seal-footer.png" alt="Verbum Domini Manet in Aeternum">
+  <p>Reformacijska čitaonica</p>
+  <p>Израдио Борис Џелајлија. Сва права задржана.</p>
+  <p>© 2026</p>
+</footer>
+
+</div>
+
+<script src="assets/config.js"></script>
+<script src="assets/vendor/supabase.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/shelf.js"></script>
+</body>
+</html>

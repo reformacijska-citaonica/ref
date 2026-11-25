@@ -4,5 +4,7 @@
 window.CITAONICA = {
   supabaseUrl: "https://moacpptrhzuvregskjfh.supabase.co",
   supabaseAnonKey: "sb_publishable_8JmSWI9zOnXNy_a7SZKrUA_zJrpUvV4",
+  privacyUrl: "https://reformacijska-citaonica.github.io/ref/privatnost.html",
+  privacyUrlSr: "https://reformacijska-citaonica.github.io/ref/privatnost-sr.html",
   /* Google OAuth se pali u Supabase Dashboard → Authentication → Providers → Google */
 };

@@ -1889,3 +1889,14 @@ body.note-modal-open .hl-sheet { visibility: hidden; }
 /* "Ad fontes!" je poveznica na naslovnicu. */
 .shelfbar-head { cursor: pointer; }
 .shelfbar-head .shelf-close { cursor: pointer; }
+
+/* ===== 2026-11-25: politika privatnosti ===== */
+.privacy { padding-top: 2.2rem; padding-bottom: 3rem; max-width: 46rem; }
+.privacy h1 { margin-top: 0; margin-bottom: 0.4rem; }
+.privacy .privacy-updated { color: var(--muted); font-size: 0.92rem; text-indent: 0; margin-bottom: 1.8rem; }
+.privacy h2 { font-size: 1.22rem; margin: 2rem 0 0.6rem; }
+.privacy p, .privacy li { text-indent: 0; text-align: left; }
+.privacy ul { padding-left: 1.3rem; margin: 0.5rem 0 1rem; }
+.privacy li { margin: 0.35rem 0; }
+.site-footer .footer-privacy { margin-top: 0.7rem; font-size: 0.85rem; }
+.site-footer .footer-privacy a { color: inherit; }

@@ -82,13 +82,14 @@
     ov.querySelector("#auth-google").textContent = t.google;
     // Obavijest uz prijavu (čl. 9 GDPR): klik na prijavu je potvrdna radnja.
     // Kuka za poveznicu: kad stranica s politikom privatnosti postoji, dodaj u config.js
-    //   privacyUrl: "/politika-privatnosti.html"  (put od korijena stranice)
+    //   privacyUrl (hrvatski) i privacyUrlSr (srpske stranice; ako ga nema, koristi se privacyUrl)
     const consent = ov.querySelector("#auth-consent");
     consent.textContent = t.consent;
-    if (cfg.privacyUrl) {
+    const privacyHref = (sr && cfg.privacyUrlSr) || cfg.privacyUrl;
+    if (privacyHref) {
       consent.appendChild(document.createTextNode(" "));
       const a = document.createElement("a");
-      a.href = cfg.privacyUrl;
+      a.href = privacyHref;
       a.textContent = t.privacy;
       consent.appendChild(a);
     }
