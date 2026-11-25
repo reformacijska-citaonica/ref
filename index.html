@@ -238,7 +238,7 @@
   var cards = [].slice.call(document.querySelectorAll(".book-card[data-lang]"));
   var title = document.querySelector(".catalog-home > h1");
   var labels = { all: "Knjige", hr: "Knjige na hrvatskom", sr: "Knjige na srpskom", en: "Knjige na engleskom" };
-  function apply(filter) {
+  function apply(filter, fromUser) {
     box.querySelectorAll(".lang-filter-btn").forEach(function (btn) {
       var on = btn.getAttribute("data-filter") === filter;
       btn.classList.toggle("is-here", on);
@@ -249,12 +249,13 @@
       card.hidden = !show;
     });
     if (title) title.textContent = labels[filter] || "Knjige";
-    try { history.replaceState(null, "", filter === "all" ? location.pathname : "#lang=" + filter); } catch (e) {}
+    // Samo na klik: pri učitavanju adresa se ne dira, jer #access_token=… nakon Google prijave mora pročitati Supabase.
+    if (fromUser) { try { history.replaceState(null, "", filter === "all" ? location.pathname : "#lang=" + filter); } catch (e) {} }
   }
   box.addEventListener("click", function (ev) {
     var btn = ev.target.closest(".lang-filter-btn");
     if (!btn) return;
-    apply(btn.getAttribute("data-filter") || "all");
+    apply(btn.getAttribute("data-filter") || "all", true);
   });
   var start = "all";
   var m = (location.hash || "").match(/lang=(all|hr|sr|en)/);
