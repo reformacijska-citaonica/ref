@@ -585,7 +585,7 @@
   function applyCurrentSelection() {
     if (!loggedIn() || !modeOn || !active) return false;
     const quote = currentQuote() || pendingQuote;
-    if (!quote || wordCount(quote) < 2) return false;
+    if (!quote) return false;
     if (active === "erase") eraseQuote(quote);
     else applyColor(active, quote);
     const sel = window.getSelection();
@@ -715,202 +715,42 @@
     el.appendChild(row);
   }
 
-  function textNodeAt(x, y) {
-    const el = document.elementFromPoint(x, y);
-    if (!el || inChrome(el) || !el.closest("main")) return null;
-    let node = null;
-    let offset = 0;
-    if (document.caretPositionFromPoint) {
-      const pos = document.caretPositionFromPoint(x, y);
-      if (pos && pos.offsetNode) {
-        node = pos.offsetNode;
-        offset = pos.offset;
-      }
-    } else if (document.caretRangeFromPoint) {
-      const r = document.caretRangeFromPoint(x, y);
-      if (r) {
-        node = r.startContainer;
-        offset = r.startOffset;
-      }
-    }
-    if (!node) return null;
-    if (node.nodeType !== 3) {
-      const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
-      node = walker.nextNode();
-      offset = 0;
-    }
-    if (!node || node.nodeType !== 3) return null;
-    return { node: node, offset: offset };
-  }
-
-  function selectWordAt(x, y) {
-    const hit = textNodeAt(x, y);
-    if (!hit) return "";
-    const text = hit.node.nodeValue || "";
-    let a = hit.offset;
-    let b = hit.offset;
-    const ok = /[0-9A-Za-zÀ-žА-яЁёЂђЈјЉљЊњЋћЏџІіЇїЄєҐґ'’-]/;
-    while (a > 0 && ok.test(text.charAt(a - 1))) a--;
-    while (b < text.length && ok.test(text.charAt(b))) b++;
-    if (b - a < 2) {
-      a = Math.max(0, hit.offset - 12);
-      b = Math.min(text.length, hit.offset + 24);
-    }
-    if (b - a < 2) return "";
-    try {
-      const range = document.createRange();
-      range.setStart(hit.node, a);
-      range.setEnd(hit.node, b);
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-    } catch (e) {}
-    return text.slice(a, b).replace(/\s+/g, " ").trim();
+  function selectionInBook() {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed || !sel.rangeCount) return false;
+    const n = sel.anchorNode || sel.focusNode;
+    const el = n && (n.nodeType === 1 ? n : n.parentElement);
+    return !!(el && el.closest && el.closest("main") && !inChrome(el));
   }
 
   function considerSelection() {
     if (inChrome(document.activeElement)) return;
+    if (!selectionInBook()) return;
     const q = currentQuote();
-    if (wordCount(q) >= 2) {
-      pendingQuote = q;
-      if (isTouch()) {
-        if (loggedIn()) setTrayOpen(true);
-        hideSheet();
-        return;
-      }
-    } else if (!pendingQuote) hideSheet();
+    if (!q) return;
+    pendingQuote = q;
+    if (isTouch() && loggedIn()) setTrayOpen(true);
+    hideSheet();
   }
 
-  /* Mobilni odabir: Chrome često ne pošalje touchend/mouseup nakon povlačenja
-     ručica odabira, pa se izbornik prije pojavljivao tek na sljedećem scrollu.
-     Sada ga otvaramo kad je odabir nekoliko trenutaka stabilan. Tijekom
-     dugog pritiska i povlačenja prsta ne diramo odabir dok se prva riječ
-     ne uhvati, zatim ga samo proširujemo od nje, da prva riječ ne ispadne. */
-  const touchSel = { down: false, extending: false, hasAnchor: false, anchor: null, anchorEnd: null, timer: null, startX: 0, startY: 0 };
+  // Mobilni odabir ostaje potpuno nativan (Chromeove ručice). Ne zovemo
+  // addRange/removeAllRanges/extend, nema touchmove preventDefault.
+  // Izbornik se otvara kad je odabir (i jedna riječ) ~350 ms stabilan.
   let selDebounce = null;
-
-  function clearTouchSel() {
-    touchSel.down = false;
-    touchSel.extending = false;
-    touchSel.hasAnchor = false;
-    touchSel.anchor = null;
-    touchSel.anchorEnd = null;
-    if (touchSel.timer) { clearTimeout(touchSel.timer); touchSel.timer = null; }
-  }
-
-  function snapshotAnchorFromSelection() {
-    const sel = window.getSelection();
-    if (!sel || sel.isCollapsed || !sel.rangeCount) return false;
-    const r = sel.getRangeAt(0);
-    touchSel.anchor = { node: r.startContainer, offset: r.startOffset };
-    touchSel.anchorEnd = { node: r.endContainer, offset: r.endOffset };
-    touchSel.hasAnchor = true;
-    return true;
-  }
-
-  function rangeAt(node, offset) {
-    const r = document.createRange();
-    r.setStart(node, offset);
-    r.setEnd(node, offset);
-    return r;
-  }
-
-  function extendSelTo(x, y) {
-    if (!touchSel.anchor || !touchSel.anchorEnd) return;
-    const hit = textNodeAt(x, y);
-    if (!hit) return;
-    try {
-      const finger = rangeAt(hit.node, hit.offset);
-      const start = rangeAt(touchSel.anchor.node, touchSel.anchor.offset);
-      const end = rangeAt(touchSel.anchorEnd.node, touchSel.anchorEnd.offset);
-      const range = document.createRange();
-      if (finger.compareBoundaryPoints(Range.START_TO_START, end) >= 0) {
-        range.setStart(touchSel.anchor.node, touchSel.anchor.offset);
-        range.setEnd(hit.node, hit.offset);
-      } else if (finger.compareBoundaryPoints(Range.START_TO_START, start) <= 0) {
-        range.setStart(hit.node, hit.offset);
-        range.setEnd(touchSel.anchorEnd.node, touchSel.anchorEnd.offset);
-      } else {
-        range.setStart(touchSel.anchor.node, touchSel.anchor.offset);
-        range.setEnd(touchSel.anchorEnd.node, touchSel.anchorEnd.offset);
-      }
-      if (range.collapsed) return;
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-    } catch (e) {}
-  }
-
   function scheduleTray() {
     if (!isTouch()) return;
     if (selDebounce) clearTimeout(selDebounce);
     selDebounce = setTimeout(function () {
       selDebounce = null;
-      if (touchSel.extending) return;
       considerSelection();
       if (modeOn) placeTrayMobile();
-    }, 300);
+    }, 350);
   }
 
   document.addEventListener("contextmenu", function (ev) {
     if (!isTouch()) return;
     if (ev.target && ev.target.closest && ev.target.closest("main")) ev.preventDefault();
   });
-
-  document.addEventListener("touchstart", function (ev) {
-    if (!isTouch() || ev.touches.length !== 1) return;
-    const target = ev.target;
-    if (inChrome(target) || !target.closest || !target.closest("main")) {
-      clearTouchSel();
-      return;
-    }
-    const tch = ev.touches[0];
-    touchSel.down = true;
-    touchSel.extending = false;
-    touchSel.hasAnchor = false;
-    touchSel.anchor = null;
-    touchSel.anchorEnd = null;
-    touchSel.startX = tch.clientX;
-    touchSel.startY = tch.clientY;
-    if (touchSel.timer) clearTimeout(touchSel.timer);
-    // Ako Chrome sam ne odabere riječ, učini to nakon uobičajenog trajanja dugog pritiska.
-    touchSel.timer = setTimeout(function () {
-      touchSel.timer = null;
-      if (!touchSel.down || touchSel.hasAnchor) return;
-      if (selectWordAt(touchSel.startX, touchSel.startY)) snapshotAnchorFromSelection();
-    }, 480);
-  }, { passive: true });
-
-  document.addEventListener("touchmove", function (ev) {
-    if (!isTouch() || !touchSel.down || ev.touches.length !== 1) return;
-    const tch = ev.touches[0];
-    const dx = tch.clientX - touchSel.startX;
-    const dy = tch.clientY - touchSel.startY;
-    if (!touchSel.extending) {
-      if (!touchSel.hasAnchor) {
-        if (dx * dx + dy * dy > 144) {
-          if (touchSel.timer) { clearTimeout(touchSel.timer); touchSel.timer = null; }
-        }
-        return;
-      }
-      if (dx * dx + dy * dy < 64) return;
-      touchSel.extending = true;
-    }
-    ev.preventDefault();
-    extendSelTo(tch.clientX, tch.clientY);
-  }, { passive: false });
-
-  document.addEventListener("touchend", function (ev) {
-    if (!isTouch()) return;
-    const wasDown = touchSel.down;
-    clearTouchSel();
-    if (!wasDown || inChrome(ev.target)) return;
-    scheduleTray();
-  }, { passive: true });
-
-  document.addEventListener("touchcancel", function () {
-    clearTouchSel();
-  }, { passive: true });
 
   document.addEventListener("mouseup", function (ev) {
     if (inChrome(ev.target)) return;
@@ -924,10 +764,8 @@
   document.addEventListener("selectionchange", function () {
     if (!isTouch()) return;
     const q = currentQuote();
-    if (q && wordCount(q) >= 2) pendingQuote = q;
-    else if (q && q.length >= 2) pendingQuote = q;
-    if (touchSel.down && !touchSel.extending) snapshotAnchorFromSelection();
-    if (!touchSel.extending) scheduleTray();
+    if (q) pendingQuote = q;
+    scheduleTray();
   });
 
   function repositionOpenTray() {
@@ -1050,10 +888,6 @@
   };
 
   function boot() {
-    // tabindex=-1: Chrome "Dotakni za pretraživanje" na TAP, ne na dugi pritisak.
-    // role=button/dialog namjerno ne stavljamo — pokvario bi čitače i TTS.
-    const main = document.querySelector("main");
-    if (main && !main.hasAttribute("tabindex")) main.setAttribute("tabindex", "-1");
     renderTray();
     setTrayOpen(false);
     addToggle();
