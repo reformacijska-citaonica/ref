@@ -1965,3 +1965,23 @@ body.note-modal-open .hl-sheet { visibility: hidden; }
 @media (pointer: coarse) {
   main[tabindex="-1"]:focus { outline: none; }
 }
+
+/* ===== 2026-11-26: jedna crta ispod naslovnog bloka, ne dvije =====
+   .titlepage already has border-bottom. Kit pages also put border-top on the
+   following h1.chap / h2.sec (and a few kin), which stacked two rules with a
+   gap between them. Drop the second rule and its extra padding. */
+.titlepage + h1.chap,
+.titlepage + h2.sec,
+.titlepage + h2.part,
+.titlepage + h3.theorema,
+.titlepage + h3.sec-head,
+.titlepage + h3.lday,
+.titlepage + .noteshead,
+.titlepage + hr {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+.titlepage + hr {
+  display: none;
+}

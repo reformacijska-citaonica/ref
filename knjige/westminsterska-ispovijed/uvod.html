@@ -96,6 +96,10 @@ div.tpage p.motto .mref { font-style:normal; font-size:0.9em; }
 p.sig-head { text-indent:0; margin-top:1.6rem; font-style:italic; text-align:left; }
 ul.signers { list-style:none; padding:0; margin:0.5rem 0 1.5rem 1.2em; }
 ul.signers li { margin:0.2rem 0; }
+
+div.tpage.tp-first { padding-top:2rem; }
+div.tpage h1.tp-title { font-size:1.5rem; font-weight:700; line-height:1.25; margin:0.9rem 0 0.4rem; text-align:center; border:0; padding:0; letter-spacing:0; }
+div.tpage p.tp-author { margin-top:0.2rem; }
 </style>
 
 </head>
@@ -132,21 +136,16 @@ ul.signers li { margin:0.2rem 0; }
     <a class="brand brand-fraktur" href="../../index.html">Reformacijska čitaonica</a>
     <button type="button" class="tts-toggle-nav" id="tts-toggle-nav" aria-controls="tts-bar" title="Aktiviraj čitanje naglas">Aktiviraj čitanje naglas</button>
   </div>
-  <nav class="chapbar" id="chapbar" aria-label="Poglavlja"><a href="#naslovnica">Naslovnica</a><a href="#napomena">Napomena prevoditelja</a></nav>
+  <nav class="chapbar" id="chapbar" aria-label="Poglavlja"><a href="#napomena">Napomena prevoditelja</a></nav>
 </div>
 <main class="wrap">
-<header class="titlepage" id="top">
-  <h1>Westminsterska ispovijed vjere</h1>
-  <p class="subtitle">Uvod</p>
-  <p class="author">Westminsterska skupština teologa</p>
-  <p class="role">u američkoj reviziji iz 1788.</p>
-  <p class="t-tr">S engleskoga preveo Boris Dželajlija, 2026.</p>
-</header>
-<div class="tpage" id="naslovnica">
+
+<div class="tpage tp-first" id="top">
 <p class="tp-top">1646. – 1647.</p>
-<p class="tp-title">Westminsterska<br/>ispovijed vjere</p>
+<h1 class="tp-title">Westminsterska<br/>ispovijed vjere</h1>
 <p class="subtitle">u američkoj reviziji iz 1788.</p>
 <p class="ornament">✦</p>
+<p class="tp-small tp-author">Westminsterska skupština teologa</p>
 <p class="tp-small">S engleskoga preveo Boris Dželajlija, 2026.</p>
 </div>
 <h2 class="sec" id="napomena"><span class="ttl">Napomena prevoditelja</span></h2>
@@ -184,7 +183,7 @@ ul.signers li { margin:0.2rem 0; }
   </div>
 </div>
 
-<script type="application/json" id="tts-sections">[{"id": "top", "label": "Uvod"}, {"id": "naslovnica", "label": "Naslovnica"}, {"id": "napomena", "label": "Napomena prevoditelja"}]</script>
+<script type="application/json" id="tts-sections">[{"id": "top", "label": "Uvod"}, {"id": "napomena", "label": "Napomena prevoditelja"}]</script>
 <script src="../../assets/config.js"></script>
 <script src="../../assets/vendor/supabase.js"></script>
 <script src="../../assets/auth.js"></script>
