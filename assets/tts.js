@@ -216,13 +216,59 @@
     return raw.slice(0, 2);
   }
 
+  function langTag(v) {
+    return (v.lang || "").toLowerCase().replace(/_/g, "-");
+  }
+
+  function voiceName(v) {
+    return (v.name || "").toLowerCase();
+  }
+
+  function isNatural(v) {
+    return /natural|online/.test(voiceName(v));
+  }
+
+  function isSrLang(v) {
+    var L = langTag(v);
+    return /^sr(-|$)/.test(L);
+  }
+
+  function isSrRsOrCyrl(v) {
+    var L = langTag(v);
+    return /^sr-rs\b/.test(L) || /^sr-cyrl\b/.test(L) || /\(cyrillic\)/.test(voiceName(v));
+  }
+
   function voiceMatches(v, lang) {
-    var L = (v.lang || "").toLowerCase();
-    var N = (v.name || "").toLowerCase();
-    if (lang === "en") return /^en/.test(L) || /english/.test(N);
-    if (lang === "sr") return /^(sr|bs)/.test(L) || /serb/.test(N);
-    if (lang === "hr") return /^hr/.test(L) || /croat/.test(N);
+    var L = langTag(v);
+    var N = voiceName(v);
+    if (lang === "en") return /^en(-|$)/.test(L) || /english/.test(N);
+    // Samo stvarni srpski glasovi — bosanski (bs) ovdje nije pogodak.
+    if (lang === "sr") return isSrLang(v) || /serb|srpski|српск/.test(N);
+    if (lang === "hr") return /^hr(-|$)/.test(L) || /croat|hrvat/.test(N);
     return L.indexOf(lang) === 0;
+  }
+
+  // Niži broj = bolji. Za sr: sr-RS/sr-Cyrl Natural, ostali sr-RS/Cyrl,
+  // bilo koji sr, tek onda hr/bs.
+  function voiceScore(v, lang) {
+    var L = langTag(v);
+    if (lang === "en") return englishScore(v);
+    if (lang === "sr") {
+      if (isSrRsOrCyrl(v)) return isNatural(v) ? 0 : 1;
+      if (voiceMatches(v, "sr")) return isNatural(v) ? 2 : 3;
+      if (/^hr(-|$)/.test(L) || /^bs(-|$)/.test(L) || /croat|bosnian|bosansk/.test(voiceName(v))) return 10;
+      if (/^en(-|$)/.test(L)) return 20;
+      return 30;
+    }
+    if (lang === "hr") {
+      if (voiceMatches(v, "hr")) return isNatural(v) ? 0 : 1;
+      if (/^(sl|sr|bs)(-|$)/.test(L)) return 10;
+      if (/^en(-|$)/.test(L)) return 20;
+      return 30;
+    }
+    if (voiceMatches(v, lang)) return 0;
+    if (/^en(-|$)/.test(L)) return 20;
+    return 30;
   }
 
   function englishScore(v) {
@@ -237,30 +283,44 @@
     return n;
   }
 
+  var VOICE_KEY = "citaonica-tts-voice:";
+
+  function storedVoice(lang) {
+    try { return localStorage.getItem(VOICE_KEY + lang) || ""; } catch (e) { return ""; }
+  }
+
+  function storeVoice(lang, name) {
+    try {
+      if (name) localStorage.setItem(VOICE_KEY + lang, name);
+      else localStorage.removeItem(VOICE_KEY + lang);
+    } catch (e) {}
+  }
+
+  function bestVoice(lang) {
+    if (!voices.length) return null;
+    const ranked = voices.slice().sort(function (a, b) {
+      return voiceScore(a, lang) - voiceScore(b, lang) || a.name.localeCompare(b.name);
+    });
+    return ranked[0] || null;
+  }
+
   function preferredVoice() {
+    const lang = pageLang();
     const chosen = voiceSel.value;
     if (chosen) {
       const exact = voices.find(function (v) { return v.name === chosen; });
       if (exact) return exact;
     }
-    const lang = pageLang();
-    var pool = voices.filter(function (v) { return voiceMatches(v, lang); });
-    if (lang === "en" && pool.length) {
-      pool.sort(function (a, b) { return englishScore(a) - englishScore(b); });
-      return pool[0];
+    const stored = storedVoice(lang);
+    if (stored) {
+      const hit = voices.find(function (v) { return v.name === stored; });
+      if (hit) return hit;
     }
-    const hit = pool[0];
-    if (hit) return hit;
-    if (lang === "hr") {
-      const sl = voices.find(function (v) { return /^sl(-|$)/i.test(v.lang); });
-      if (sl) return sl;
-    }
-    return voices.find(function (v) { return /^en/i.test(v.lang); }) || voices[0] || null;
+    return bestVoice(lang);
   }
 
   function fillVoices() {
     voices = synth.getVoices() || [];
-    const prev = voiceSel.value;
     voiceSel.innerHTML = "";
     if (!voices.length) {
       const opt = document.createElement("option");
@@ -271,23 +331,7 @@
     }
     const lang = pageLang();
     const ranked = voices.slice().sort(function (a, b) {
-      const score = function (v) {
-        if (lang === "en") return englishScore(v);
-        if (voiceMatches(v, lang)) return 0;
-        const L = (v.lang || "").toLowerCase();
-        if (lang === "en") {
-          if (/^en/.test(L)) return 0;
-          return 3;
-        }
-        if (lang === "sr") {
-          if (/^(hr|bs)/.test(L)) return 1;
-        } else if (lang === "hr") {
-          if (/^(sl|sr|bs)/.test(L)) return 1;
-        }
-        if (/^en/.test(L)) return 2;
-        return 3;
-      };
-      return score(a) - score(b) || a.name.localeCompare(b.name);
+      return voiceScore(a, lang) - voiceScore(b, lang) || a.name.localeCompare(b.name);
     });
     ranked.forEach(function (v) {
       const opt = document.createElement("option");
@@ -295,13 +339,14 @@
       opt.textContent = v.name + " (" + v.lang + ")";
       voiceSel.appendChild(opt);
     });
-    const prefer = lang === "en"
-      ? ranked[0]
-      : ranked.find(function (v) { return voiceMatches(v, lang); });
-    if (prev && ranked.some(function (v) { return v.name === prev; })) {
-      voiceSel.value = prev;
-    } else if (prefer) {
-      voiceSel.value = prefer.name;
+    // Spremljeni odabir vrijedi samo za ovaj jezik stranice (sr/hr/en).
+    // Automatski odabran bs/hr glas na srpskoj stranici se ne zadržava
+    // kad se pojavi pravi srpski glas (voiceschanged).
+    const stored = storedVoice(lang);
+    if (stored && ranked.some(function (v) { return v.name === stored; })) {
+      voiceSel.value = stored;
+    } else if (ranked.length) {
+      voiceSel.value = ranked[0].name;
     }
     updateVoiceHint();
   }
@@ -351,7 +396,9 @@
   }
 
   fillVoices();
-  if (typeof synth.onvoiceschanged !== "undefined") {
+  if (synth.addEventListener) {
+    synth.addEventListener("voiceschanged", fillVoices);
+  } else if (typeof synth.onvoiceschanged !== "undefined") {
     synth.onvoiceschanged = fillVoices;
   }
 
@@ -545,6 +592,7 @@
   });
 
   voiceSel.addEventListener("change", function () {
+    storeVoice(pageLang(), voiceSel.value);
     if (speaking && !paused) {
       synth.cancel();
       speakNext();
