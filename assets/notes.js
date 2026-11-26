@@ -269,9 +269,28 @@
 
   function placeTrayMobile() {
     const el = tray();
-    if (!el || el.dataset.dragged === "1") return;
+    if (!el || el.hidden || el.dataset.dragged === "1") return;
     const nav = document.querySelector(".topnav");
-    const top = nav ? Math.ceil(nav.getBoundingClientRect().bottom) + 8 : 56;
+    const navBottom = nav ? Math.ceil(nav.getBoundingClientRect().bottom) + 8 : 56;
+    const gap = 12;
+    const trayH = el.offsetHeight || 96;
+    const viewH = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+    let top = navBottom;
+    const sel = window.getSelection();
+    if (sel && !sel.isCollapsed && sel.rangeCount) {
+      const rects = sel.getRangeAt(0).getClientRects();
+      if (rects && rects.length) {
+        const last = rects[rects.length - 1];
+        const first = rects[0];
+        const below = Math.ceil(last.bottom) + gap;
+        if (below + trayH <= viewH - 8) {
+          top = below;
+        } else {
+          const above = Math.floor(first.top) - gap - trayH;
+          top = above >= navBottom ? above : Math.max(navBottom, viewH - trayH - 8);
+        }
+      }
+    }
     el.style.top = top + "px";
     el.style.bottom = "auto";
     el.style.left = "50%";
@@ -762,30 +781,164 @@
     } else if (!pendingQuote) hideSheet();
   }
 
+  /* Mobilni odabir: Chrome često ne pošalje touchend/mouseup nakon povlačenja
+     ručica odabira, pa se izbornik prije pojavljivao tek na sljedećem scrollu.
+     Sada ga otvaramo kad je odabir nekoliko trenutaka stabilan. Tijekom
+     dugog pritiska i povlačenja prsta ne diramo odabir dok se prva riječ
+     ne uhvati, zatim ga samo proširujemo od nje, da prva riječ ne ispadne. */
+  const touchSel = { down: false, extending: false, hasAnchor: false, anchor: null, anchorEnd: null, timer: null, startX: 0, startY: 0 };
+  let selDebounce = null;
+
+  function clearTouchSel() {
+    touchSel.down = false;
+    touchSel.extending = false;
+    touchSel.hasAnchor = false;
+    touchSel.anchor = null;
+    touchSel.anchorEnd = null;
+    if (touchSel.timer) { clearTimeout(touchSel.timer); touchSel.timer = null; }
+  }
+
+  function snapshotAnchorFromSelection() {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed || !sel.rangeCount) return false;
+    const r = sel.getRangeAt(0);
+    touchSel.anchor = { node: r.startContainer, offset: r.startOffset };
+    touchSel.anchorEnd = { node: r.endContainer, offset: r.endOffset };
+    touchSel.hasAnchor = true;
+    return true;
+  }
+
+  function rangeAt(node, offset) {
+    const r = document.createRange();
+    r.setStart(node, offset);
+    r.setEnd(node, offset);
+    return r;
+  }
+
+  function extendSelTo(x, y) {
+    if (!touchSel.anchor || !touchSel.anchorEnd) return;
+    const hit = textNodeAt(x, y);
+    if (!hit) return;
+    try {
+      const finger = rangeAt(hit.node, hit.offset);
+      const start = rangeAt(touchSel.anchor.node, touchSel.anchor.offset);
+      const end = rangeAt(touchSel.anchorEnd.node, touchSel.anchorEnd.offset);
+      const range = document.createRange();
+      if (finger.compareBoundaryPoints(Range.START_TO_START, end) >= 0) {
+        range.setStart(touchSel.anchor.node, touchSel.anchor.offset);
+        range.setEnd(hit.node, hit.offset);
+      } else if (finger.compareBoundaryPoints(Range.START_TO_START, start) <= 0) {
+        range.setStart(hit.node, hit.offset);
+        range.setEnd(touchSel.anchorEnd.node, touchSel.anchorEnd.offset);
+      } else {
+        range.setStart(touchSel.anchor.node, touchSel.anchor.offset);
+        range.setEnd(touchSel.anchorEnd.node, touchSel.anchorEnd.offset);
+      }
+      if (range.collapsed) return;
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    } catch (e) {}
+  }
+
+  function scheduleTray() {
+    if (!isTouch()) return;
+    if (selDebounce) clearTimeout(selDebounce);
+    selDebounce = setTimeout(function () {
+      selDebounce = null;
+      if (touchSel.extending) return;
+      considerSelection();
+      if (modeOn) placeTrayMobile();
+    }, 300);
+  }
+
   document.addEventListener("contextmenu", function (ev) {
     if (!isTouch()) return;
     if (ev.target && ev.target.closest && ev.target.closest("main")) ev.preventDefault();
   });
 
+  document.addEventListener("touchstart", function (ev) {
+    if (!isTouch() || ev.touches.length !== 1) return;
+    const target = ev.target;
+    if (inChrome(target) || !target.closest || !target.closest("main")) {
+      clearTouchSel();
+      return;
+    }
+    const tch = ev.touches[0];
+    touchSel.down = true;
+    touchSel.extending = false;
+    touchSel.hasAnchor = false;
+    touchSel.anchor = null;
+    touchSel.anchorEnd = null;
+    touchSel.startX = tch.clientX;
+    touchSel.startY = tch.clientY;
+    if (touchSel.timer) clearTimeout(touchSel.timer);
+    // Ako Chrome sam ne odabere riječ, učini to nakon uobičajenog trajanja dugog pritiska.
+    touchSel.timer = setTimeout(function () {
+      touchSel.timer = null;
+      if (!touchSel.down || touchSel.hasAnchor) return;
+      if (selectWordAt(touchSel.startX, touchSel.startY)) snapshotAnchorFromSelection();
+    }, 480);
+  }, { passive: true });
+
+  document.addEventListener("touchmove", function (ev) {
+    if (!isTouch() || !touchSel.down || ev.touches.length !== 1) return;
+    const tch = ev.touches[0];
+    const dx = tch.clientX - touchSel.startX;
+    const dy = tch.clientY - touchSel.startY;
+    if (!touchSel.extending) {
+      if (!touchSel.hasAnchor) {
+        if (dx * dx + dy * dy > 144) {
+          if (touchSel.timer) { clearTimeout(touchSel.timer); touchSel.timer = null; }
+        }
+        return;
+      }
+      if (dx * dx + dy * dy < 64) return;
+      touchSel.extending = true;
+    }
+    ev.preventDefault();
+    extendSelTo(tch.clientX, tch.clientY);
+  }, { passive: false });
+
+  document.addEventListener("touchend", function (ev) {
+    if (!isTouch()) return;
+    const wasDown = touchSel.down;
+    clearTouchSel();
+    if (!wasDown || inChrome(ev.target)) return;
+    scheduleTray();
+  }, { passive: true });
+
+  document.addEventListener("touchcancel", function () {
+    clearTouchSel();
+  }, { passive: true });
+
   document.addEventListener("mouseup", function (ev) {
     if (inChrome(ev.target)) return;
     if (isTouch()) {
-      setTimeout(considerSelection, 30);
+      scheduleTray();
       return;
     }
     applyCurrentSelection();
   });
 
-  document.addEventListener("touchend", function (ev) {
-    if (inChrome(ev.target)) return;
-    setTimeout(considerSelection, 80);
-  }, { passive: true });
-
   document.addEventListener("selectionchange", function () {
     if (!isTouch()) return;
     const q = currentQuote();
-    if (q && q.length >= 2) pendingQuote = q;
+    if (q && wordCount(q) >= 2) pendingQuote = q;
+    else if (q && q.length >= 2) pendingQuote = q;
+    if (touchSel.down && !touchSel.extending) snapshotAnchorFromSelection();
+    if (!touchSel.extending) scheduleTray();
   });
+
+  function repositionOpenTray() {
+    if (isTouch() && modeOn) placeTrayMobile();
+  }
+  window.addEventListener("scroll", repositionOpenTray, { passive: true });
+  window.addEventListener("resize", repositionOpenTray);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("scroll", repositionOpenTray);
+    window.visualViewport.addEventListener("resize", repositionOpenTray);
+  }
 
   document.addEventListener("keydown", function (ev) {
     if (ev.key === "Escape") setTrayOpen(false);
@@ -897,6 +1050,10 @@
   };
 
   function boot() {
+    // tabindex=-1: Chrome "Dotakni za pretraživanje" na TAP, ne na dugi pritisak.
+    // role=button/dialog namjerno ne stavljamo — pokvario bi čitače i TTS.
+    const main = document.querySelector("main");
+    if (main && !main.hasAttribute("tabindex")) main.setAttribute("tabindex", "-1");
     renderTray();
     setTrayOpen(false);
     addToggle();
