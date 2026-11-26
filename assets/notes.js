@@ -413,10 +413,71 @@
     el.appendChild(foot);
   }
 
+  // Trostruki klik ili povlačenje do kraja odlomka u pregledniku često
+  // završi raspon na offsetu 0 sljedećeg bloka (ili na praznom rubu).
+  // Sužavamo granice na stvarne tekstualne čvorove i odbacujemo
+  // rubove koji su samo razmak, da citat i bojenje ostanu unutar odabira.
+  function selectedPieces(range) {
+    const pieces = [];
+    if (!range || range.collapsed) return pieces;
+    const ancestor = range.commonAncestorContainer;
+    const root = ancestor.nodeType === 3 ? ancestor.parentNode : ancestor;
+    if (!root) return pieces;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (n) {
+        if (!n.nodeValue) return NodeFilter.FILTER_REJECT;
+        if (n.parentElement && n.parentElement.closest("script, style, .tts-bar, .shelfbar, .topnav, .hl-tray, .notes-panel")) {
+          return NodeFilter.FILTER_REJECT;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    let n;
+    while ((n = walker.nextNode())) {
+      const len = n.nodeValue.length;
+      try {
+        if (range.comparePoint(n, 0) === 1) continue;
+        if (range.comparePoint(n, len) === -1) continue;
+      } catch (e) { continue; }
+      let from = 0;
+      let to = len;
+      if (range.startContainer === n) from = range.startOffset;
+      if (range.endContainer === n) to = range.endOffset;
+      if (from < 0) from = 0;
+      if (to > len) to = len;
+      if (from >= to) continue;
+      pieces.push({ node: n, from: from, to: to });
+    }
+    while (pieces.length) {
+      const p = pieces[0];
+      const t = p.node.nodeValue;
+      while (p.from < p.to && /\s/.test(t.charAt(p.from))) p.from++;
+      if (p.from >= p.to) { pieces.shift(); continue; }
+      break;
+    }
+    while (pieces.length) {
+      const p = pieces[pieces.length - 1];
+      const t = p.node.nodeValue;
+      while (p.to > p.from && /\s/.test(t.charAt(p.to - 1))) p.to--;
+      if (p.from >= p.to) { pieces.pop(); continue; }
+      break;
+    }
+    return pieces;
+  }
+
+  function quoteFromRange(range) {
+    const pieces = selectedPieces(range);
+    if (!pieces.length) return "";
+    const r = document.createRange();
+    r.setStart(pieces[0].node, pieces[0].from);
+    r.setEnd(pieces[pieces.length - 1].node, pieces[pieces.length - 1].to);
+    return normQuote(r.toString());
+  }
+
   function currentQuote() {
     const sel = window.getSelection();
-    if (!sel || sel.isCollapsed) return "";
-    return String(sel).replace(/\s+/g, " ").trim();
+    if (!sel || sel.isCollapsed || !sel.rangeCount) return "";
+    return quoteFromRange(sel.getRangeAt(0));
   }
 
   function applyColor(colorId, quote) {
@@ -426,7 +487,7 @@
       items.push({
         id: uid(),
         kind: "mark",
-        quote: quote.slice(0, 500),
+        quote: quote.slice(0, 8000),
         text: "",
         color: colorId,
         at: Date.now()
@@ -462,36 +523,124 @@
     });
     const root = document.querySelector("main") || document.body;
     items.forEach(function (it) {
-      if (!it.quote || it.quote.length < 4) return;
-      highlightFirst(root, it);
+      if (!it.quote || it.quote.length < 2) return;
+      highlightQuote(root, it);
     });
   }
 
-  function highlightFirst(root, it) {
+  function bookTextNodes(root) {
+    const nodes = [];
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
       acceptNode: function (n) {
-        if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        if (!n.nodeValue) return NodeFilter.FILTER_REJECT;
         if (n.parentElement && n.parentElement.closest("script, style, .tts-bar, .shelfbar, .topnav, .hl-tray, .notes-panel, mark.user-hl")) {
           return NodeFilter.FILTER_REJECT;
         }
         return NodeFilter.FILTER_ACCEPT;
       }
     });
-    let node;
-    while ((node = walker.nextNode())) {
-      const idx = node.nodeValue.indexOf(it.quote);
-      if (idx === -1) continue;
-      const range = document.createRange();
-      range.setStart(node, idx);
-      range.setEnd(node, Math.min(node.nodeValue.length, idx + it.quote.length));
-      const mark = document.createElement("mark");
-      mark.className = "user-hl";
-      mark.dataset.color = it.color || "gold";
-      mark.dataset.id = it.id;
-      mark.style.background = colorHex(it.color);
-      mark.title = it.text || "";
-      try { range.surroundContents(mark); } catch (e) {}
-      return;
+    let n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    return nodes;
+  }
+
+  function closestBlock(node) {
+    let e = node.nodeType === 1 ? node : node.parentElement;
+    while (e) {
+      if (e.tagName && /^(P|DIV|H[1-6]|LI|TR|DT|DD|BLOCKQUOTE|SECTION|ARTICLE|HEADER|FOOTER|PRE|FIGCAPTION|MAIN)$/.test(e.tagName)) return e;
+      e = e.parentElement;
+    }
+    return null;
+  }
+
+  function gapNeedsSpace(prev, next) {
+    if (closestBlock(prev) !== closestBlock(next)) return true;
+    const r = document.createRange();
+    try {
+      r.setStart(prev, prev.nodeValue.length);
+      r.setEnd(next, 0);
+    } catch (e) { return false; }
+    const ancestor = r.commonAncestorContainer;
+    if (!ancestor) return false;
+    const w = document.createTreeWalker(ancestor, NodeFilter.SHOW_ELEMENT);
+    let el;
+    while ((el = w.nextNode())) {
+      if (!r.intersectsNode(el)) continue;
+      if (el.tagName === "BR" || el.tagName === "WBR") return true;
+    }
+    return false;
+  }
+
+  function normQuote(q) {
+    return String(q || "").replace(/[\u00AD\u200B\u200C\u200D\uFEFF]/g, "").replace(/\s+/g, " ").trim();
+  }
+
+  // Složi tekst knjige s preslikom na čvorove, preko inline elemenata (i/em/span)
+  // i ujednačenih razmaka (prijelomi retka, <br>, odlomci).
+  function textIndex(nodes) {
+    let norm = "";
+    const map = [];
+    let lastSpace = true;
+    let prev = null;
+    for (let n = 0; n < nodes.length; n++) {
+      const node = nodes[n];
+      if (prev && gapNeedsSpace(prev, node) && !lastSpace) {
+        norm += " ";
+        map.push({ node: node, offset: 0, gap: true });
+        lastSpace = true;
+      }
+      const t = node.nodeValue;
+      for (let i = 0; i < t.length; i++) {
+        const ch = t.charAt(i);
+        if (/[\u00AD\u200B\u200C\u200D\uFEFF]/.test(ch)) continue;
+        if (/\s/.test(ch)) {
+          if (lastSpace) continue;
+          norm += " ";
+          map.push({ node: node, offset: i });
+          lastSpace = true;
+        } else {
+          norm += ch;
+          map.push({ node: node, offset: i });
+          lastSpace = false;
+        }
+      }
+      prev = node;
+    }
+    return { norm: norm, map: map };
+  }
+
+  function wrapPortion(node, from, to, it) {
+    if (!node || from >= to) return;
+    const range = document.createRange();
+    range.setStart(node, from);
+    range.setEnd(node, to);
+    const mark = document.createElement("mark");
+    mark.className = "user-hl";
+    mark.dataset.color = it.color || "gold";
+    mark.dataset.id = it.id;
+    mark.style.background = colorHex(it.color);
+    mark.title = it.text || "";
+    try { range.surroundContents(mark); } catch (e) {}
+  }
+
+  function highlightQuote(root, it) {
+    const q = normQuote(it.quote);
+    if (q.length < 2) return;
+    const nodes = bookTextNodes(root);
+    const idx = textIndex(nodes);
+    const at = idx.norm.indexOf(q);
+    if (at === -1) return;
+    const end = at + q.length;
+    const pieces = [];
+    for (let i = at; i < end && i < idx.map.length; i++) {
+      const m = idx.map[i];
+      if (!m || m.gap) continue;
+      const last = pieces[pieces.length - 1];
+      if (last && last.node === m.node && m.offset === last.to) last.to = m.offset + 1;
+      else pieces.push({ node: m.node, from: m.offset, to: m.offset + 1 });
+    }
+    for (let p = pieces.length - 1; p >= 0; p--) {
+      wrapPortion(pieces[p].node, pieces[p].from, pieces[p].to, it);
     }
   }
 
@@ -584,8 +733,10 @@
 
   function applyCurrentSelection() {
     if (!loggedIn() || !modeOn || !active) return false;
-    const quote = currentQuote() || pendingQuote;
+    // Na računalu uvijek uzimamo konačni odabir u trenutku mouseup, ne privremeni mid-drag.
+    const quote = usingTouch() ? (currentQuote() || pendingQuote) : currentQuote();
     if (!quote) return false;
+    if (!usingTouch() && wordCount(quote) < 2) return false;
     if (active === "erase") eraseQuote(quote);
     else applyColor(active, quote);
     const sel = window.getSelection();
@@ -729,32 +880,57 @@
     const q = currentQuote();
     if (!q) return;
     pendingQuote = q;
-    if (isTouch() && loggedIn()) setTrayOpen(true);
+    if (usingTouch() && loggedIn()) setTrayOpen(true);
     hideSheet();
   }
 
-  // Mobilni odabir ostaje potpuno nativan (Chromeove ručice). Ne zovemo
-  // addRange/removeAllRanges/extend, nema touchmove preventDefault.
-  // Izbornik se otvara kad je odabir (i jedna riječ) ~350 ms stabilan.
+  // Mobilni odabir ostaje potpuno nativan. Izbornik (samo na dodir) se otvara
+  // kad je odabir ~350 ms stabilan. Na računalu se oznaka primjenjuje tek na
+  // mouseup, prema konačnom odabiru, nikad usred povlačenja.
   let selDebounce = null;
+  let lastPointerType = "";
+  let pointerHeld = false;
+
+  function usingTouch() {
+    return lastPointerType === "touch" || (!lastPointerType && isTouch());
+  }
+
+  document.addEventListener("pointerdown", function (ev) {
+    if (!ev.isPrimary) return;
+    lastPointerType = ev.pointerType || "";
+    pointerHeld = true;
+  }, true);
+
+  document.addEventListener("pointerup", function (ev) {
+    if (!ev.isPrimary) return;
+    pointerHeld = false;
+  }, true);
+
+  document.addEventListener("pointercancel", function (ev) {
+    if (!ev.isPrimary) return;
+    pointerHeld = false;
+  }, true);
+
   function scheduleTray() {
-    if (!isTouch()) return;
+    if (!usingTouch()) return;
+    if (pointerHeld) return;
     if (selDebounce) clearTimeout(selDebounce);
     selDebounce = setTimeout(function () {
       selDebounce = null;
+      if (pointerHeld) return;
       considerSelection();
       if (modeOn) placeTrayMobile();
     }, 350);
   }
 
   document.addEventListener("contextmenu", function (ev) {
-    if (!isTouch()) return;
+    if (!usingTouch()) return;
     if (ev.target && ev.target.closest && ev.target.closest("main")) ev.preventDefault();
   });
 
   document.addEventListener("mouseup", function (ev) {
     if (inChrome(ev.target)) return;
-    if (isTouch()) {
+    if (usingTouch()) {
       scheduleTray();
       return;
     }
@@ -762,7 +938,8 @@
   });
 
   document.addEventListener("selectionchange", function () {
-    if (!isTouch()) return;
+    if (!usingTouch()) return;
+    if (pointerHeld) return;
     const q = currentQuote();
     if (q) pendingQuote = q;
     scheduleTray();
