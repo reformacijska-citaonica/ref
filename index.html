@@ -28,9 +28,12 @@
     <div class="shelf-rule" aria-hidden="true"></div>
     <div class="lang-filter" id="lang-filter" role="tablist" aria-label="Jezik knjiga">
       <button type="button" class="shelf-item lang-filter-btn is-here" data-filter="all" role="tab" aria-selected="true">Sve knjige</button>
-      <button type="button" class="shelf-item lang-filter-btn" data-filter="hr" role="tab" aria-selected="false">Knjige na Hrvatskom</button>
-      <button type="button" class="shelf-item lang-filter-btn" data-filter="sr" role="tab" aria-selected="false">Knjige na Srpskom</button>
-      <button type="button" class="shelf-item lang-filter-btn" data-filter="en" role="tab" aria-selected="false">Knjige na Engleskom</button>
+      <p class="tag-filter-head">Jezik</p>
+      <div class="tag-filter-group" data-group="lang" role="group" aria-label="Jezik">
+        <button type="button" class="shelf-item lang-filter-btn tag-filter-btn" data-filter="hr" role="tab" aria-selected="false">Hrvatski</button>
+        <button type="button" class="shelf-item lang-filter-btn tag-filter-btn" data-filter="sr" role="tab" aria-selected="false">Srpski</button>
+        <button type="button" class="shelf-item lang-filter-btn tag-filter-btn" data-filter="en" role="tab" aria-selected="false">Engleski</button>
+      </div>
     </div>
     <div class="tag-filter" id="tag-filter">
       <p class="tag-filter-head">Tradicija</p>
@@ -221,12 +224,6 @@
         <h2>A Body of Doctrinal Divinity</h2>
         <p class="sub">A System of Evangelical Truths, Deduced from the Sacred Scriptures</p>
         <p class="meta">John Gill</p>
-      </a>
-
-      <a class="book-card" data-lang="en" data-trad="" data-kind="rasprave" href="knjige/brekell/uvod.html">
-        <h2>Paedo-Baptism</h2>
-        <p class="sub">Three tracts against Dr. John Gill (London: J. Waugh, 1753–1755)</p>
-        <p class="meta">John Brekell</p>
       </a>
 
       <a class="book-card" data-lang="en" data-trad="reformirani" data-kind="rasprave" href="knjige/owen/uvod.html">
