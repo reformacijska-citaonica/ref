@@ -298,68 +298,12 @@
   }
 
   function renderHome() {
-    if (!isHome()) return;
-    const main = document.querySelector("main.catalog-home, main.wrap");
-    if (!main) return;
-    const grid = main.querySelector(".book-grid");
-    function section(id, cls, title) {
-      let el = document.getElementById(id);
-      if (!el) {
-        el = document.createElement("section");
-        el.id = id;
-        el.className = cls;
-        const h = document.createElement("h2");
-        h.textContent = title;
-        el.appendChild(h);
-        const list = document.createElement("ul");
-        list.className = "bm-home-list";
-        el.appendChild(list);
-        if (grid) main.insertBefore(el, grid);
-        else main.appendChild(el);
-      }
-      return el;
-    }
-    const leftover = document.getElementById("home-continue");
-    if (leftover) leftover.remove();
-    const marksSec = section("home-bookmarks", "home-bookmarks", t.marks);
-    const all = marks.slice().sort(function (a, b) { return (b.at || 0) - (a.at || 0); });
-    fillHomeList(marksSec, all);
-  }
-
-  function fillHomeList(sec, items) {
-    const ul = sec.querySelector("ul");
-    ul.innerHTML = "";
-    if (!items.length) { sec.hidden = true; return; }
-    sec.hidden = false;
-    items.forEach(function (rec) {
-      const li = document.createElement("li");
-      const a = document.createElement("a");
-      a.href = hrefTo(rec.url) + (rec.paraId ? "#" + encodeURIComponent(rec.paraId) : "");
-      a.className = "bm-home-link";
-      const title = document.createElement("span");
-      title.className = "bm-home-title";
-      title.textContent = rec.bookTitle || rec.bookKey || "";
-      const meta = document.createElement("span");
-      meta.className = "bm-home-meta";
-      const bits = [];
-      if (rec.chapterTitle) bits.push(rec.chapterTitle);
-      if (rec.label) bits.push(rec.label);
-      meta.textContent = bits.join(" · ");
-      a.appendChild(title);
-      if (bits.length) a.appendChild(meta);
-      li.appendChild(a);
-      const del = document.createElement("button");
-      del.type = "button";
-      del.className = "bm-del";
-      del.setAttribute("aria-label", t.remove);
-      del.textContent = "×";
-      del.addEventListener("click", function (ev) {
-        ev.preventDefault();
-        ev.stopPropagation();
-        removeMark(rec);
-      });
-      li.appendChild(del);
-      ul.appendChild(li);
+    ["home-continue", "home-bookmarks"].forEach(function (id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    });
+    document.querySelectorAll(".home-continue, .home-bookmarks").forEach(function (el) {
+      el.remove();
     });
   }
 
