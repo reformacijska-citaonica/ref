@@ -184,6 +184,9 @@
     if (window.CitaonicaNotes && window.CitaonicaNotes.syncAuth) {
       window.CitaonicaNotes.syncAuth(user);
     }
+    if (window.CitaonicaBookmarks && window.CitaonicaBookmarks.syncAuth) {
+      window.CitaonicaBookmarks.syncAuth(user);
+    }
   }
 
   async function signIn() {
@@ -200,6 +203,7 @@
 
   // Odjava: lokalne oznake i bilješke brišu se s uređaja (i s prikaza), da ih sljedeći korisnik ne vidi.
   function clearLocalNotes() {
+    if (window.CitaonicaBookmarks && window.CitaonicaBookmarks.clearLocal) window.CitaonicaBookmarks.clearLocal();
     if (window.CitaonicaNotes && window.CitaonicaNotes.clearLocal) { window.CitaonicaNotes.clearLocal(); return; }
     // Stranice bez notes.js (naslovnica, politika privatnosti): ključeve brišemo izravno.
     try {
@@ -234,11 +238,22 @@
         rows.push.apply(rows, res.data || []);
         if (!res.data || res.data.length < PAGE) break;
       }
+      let bookmarks = [], progress = [];
+      try {
+        const b = await client.from("bookmarks").select("*").order("updated_at");
+        if (!b.error) bookmarks = b.data || [];
+      } catch (e) {}
+      try {
+        const r = await client.from("reading_progress").select("*").order("updated_at");
+        if (!r.error) progress = r.data || [];
+      } catch (e) {}
       const data = {
         site: "Reformacijska čitaonica",
         exported_at: new Date().toISOString(),
         profile: { email: user.email || null, created_at: user.created_at || null },
-        highlights: rows
+        highlights: rows,
+        bookmarks: bookmarks,
+        reading_progress: progress
       };
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       const a = document.createElement("a");

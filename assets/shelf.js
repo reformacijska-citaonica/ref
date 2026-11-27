@@ -28,3 +28,14 @@
     window.location.href = home;
   });
 })();
+
+/* Oznake i nastavak čitanja: isti direktorij kao shelf.js, bez izmjene HTML-a stranica. */
+(function () {
+  var cur = document.querySelector('script[src*="shelf.js"]');
+  var src = cur && cur.getAttribute("src");
+  if (!src) return;
+  var s = document.createElement("script");
+  s.src = src.replace(/shelf\.js(\?.*)?$/, "bookmarks.js");
+  s.async = false;
+  cur.parentNode.insertBefore(s, cur.nextSibling);
+})();
