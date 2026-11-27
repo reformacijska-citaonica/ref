@@ -1,11 +1,10 @@
-/* Reformacijska čitaonica — oznake na odlomcima i „Nastavi čitati“.
-   Gost: localStorage. Prijavljen: Supabase (tablice bookmarks, reading_progress),
+/* Reformacijska čitaonica — oznake na odlomcima (Moje oznake).
+   Gost: localStorage. Prijavljen: Supabase (tablica bookmarks),
    a ako tablica još ne postoji, ostaje samo lokalno spremanje. */
 (function () {
   const sr = (document.documentElement.lang || "").indexOf("sr") === 0;
   const t = {
     marks: sr ? "Моје ознаке" : "Moje oznake",
-    cont: sr ? "Настави читати" : "Nastavi čitati",
     add: sr ? "Додај ознаку" : "Dodaj oznaku",
     remove: sr ? "Уклони ознаку" : "Ukloni oznaku",
     del: sr ? "Уклони" : "Ukloni",
@@ -13,10 +12,9 @@
   };
 
   const LS_MARKS = "citaonica-bookmarks";
-  const LS_PROG = "citaonica-progress";
   const LAST_UID = "citaonica-last-uid";
   let marks = load(LS_MARKS, []);
-  let progress = load(LS_PROG, {});
+  try { localStorage.removeItem("citaonica-progress"); } catch (e) {}
   let cloudOff = false;
   let assigned = false;
 
@@ -321,18 +319,14 @@
       }
       return el;
     }
-    const cont = section("home-continue", "home-continue", t.cont);
+    const leftover = document.getElementById("home-continue");
+    if (leftover) leftover.remove();
     const marksSec = section("home-bookmarks", "home-bookmarks", t.marks);
-
-    const progItems = Object.keys(progress).map(function (k) { return progress[k]; })
-      .filter(function (p) { return p && p.url; })
-      .sort(function (a, b) { return (b.at || 0) - (a.at || 0); });
-    fillHomeList(cont, progItems, true);
     const all = marks.slice().sort(function (a, b) { return (b.at || 0) - (a.at || 0); });
-    fillHomeList(marksSec, all, false);
+    fillHomeList(marksSec, all);
   }
 
-  function fillHomeList(sec, items, isProg) {
+  function fillHomeList(sec, items) {
     const ul = sec.querySelector("ul");
     ul.innerHTML = "";
     if (!items.length) { sec.hidden = true; return; }
@@ -354,54 +348,19 @@
       a.appendChild(title);
       if (bits.length) a.appendChild(meta);
       li.appendChild(a);
-      if (!isProg) {
-        const del = document.createElement("button");
-        del.type = "button";
-        del.className = "bm-del";
-        del.setAttribute("aria-label", t.remove);
-        del.textContent = "×";
-        del.addEventListener("click", function (ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-          removeMark(rec);
-        });
-        li.appendChild(del);
-      }
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "bm-del";
+      del.setAttribute("aria-label", t.remove);
+      del.textContent = "×";
+      del.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        removeMark(rec);
+      });
+      li.appendChild(del);
       ul.appendChild(li);
     });
-  }
-
-  /* —— nastavak čitanja —— */
-  function rememberProgress() {
-    if (isHome()) return;
-    const root = document.querySelector("main.wrap");
-    if (!root) return;
-    const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h")) || 80;
-    const paras = targetParas();
-    let current = null;
-    for (let i = 0; i < paras.length; i++) {
-      const r = paras[i].getBoundingClientRect();
-      if (r.bottom > navH + 12) { current = paras[i]; break; }
-    }
-    if (!current) return;
-    const rec = {
-      bookKey: currentBookKey(),
-      bookTitle: bookTitle(),
-      chapterTitle: chapterOf(current),
-      url: pathFromRoot(),
-      paraId: current.id || current.getAttribute("data-bm-id") || "",
-      label: firstWords(current, 8),
-      at: Date.now()
-    };
-    progress[rec.bookKey] = rec;
-    save(LS_PROG, progress);
-    cloudUpsertProgress(rec);
-  }
-
-  let progTimer = null;
-  function onScroll() {
-    if (progTimer) clearTimeout(progTimer);
-    progTimer = setTimeout(rememberProgress, 600);
   }
 
   /* —— Supabase —— */
@@ -453,25 +412,6 @@
       if (res.error && !noteCloud(res.error)) console.warn("bookmarks delete", res.error);
     } catch (e) { if (!noteCloud(e)) console.warn("bookmarks delete", e); }
   }
-  async function cloudUpsertProgress(rec) {
-    const c = client(), uid = userId();
-    if (cloudOff || !c || !uid) return;
-    const row = {
-      user_id: uid,
-      book_key: rec.bookKey,
-      book_title: rec.bookTitle,
-      chapter_title: rec.chapterTitle || "",
-      url: rec.url,
-      para_id: rec.paraId || "",
-      label: rec.label || "",
-      updated_at: new Date(rec.at || Date.now()).toISOString()
-    };
-    try {
-      const res = await c.from("reading_progress").upsert(row, { onConflict: "user_id,book_key" });
-      if (res.error && !noteCloud(res.error)) console.warn("progress upsert", res.error);
-    } catch (e) { if (!noteCloud(e)) console.warn("progress upsert", e); }
-  }
-
   function markKey(m) { return (m.bookKey || "") + "\t" + (m.url || "").split("#")[0] + "\t" + (m.paraId || ""); }
 
   async function pullAndMerge() {
@@ -505,43 +445,14 @@
       for (let i = 0; i < localOnly.length; i++) await cloudUpsertMark(localOnly[i]);
     } catch (e) { if (!noteCloud(e)) console.warn("bookmarks pull", e); }
 
-    try {
-      const res = await c.from("reading_progress").select("*");
-      if (res.error) { noteCloud(res.error); return; }
-      (res.data || []).forEach(function (row) {
-        const it = {
-          bookKey: row.book_key,
-          bookTitle: row.book_title,
-          chapterTitle: row.chapter_title || "",
-          url: row.url,
-          paraId: row.para_id || "",
-          label: row.label || "",
-          at: row.updated_at ? Date.parse(row.updated_at) : Date.now()
-        };
-        const local = progress[it.bookKey];
-        if (!local || it.at >= (local.at || 0)) progress[it.bookKey] = it;
-      });
-      save(LS_PROG, progress);
-      const keys = Object.keys(progress);
-      for (let i = 0; i < keys.length; i++) {
-        const rec = progress[keys[i]];
-        const remote = (res.data || []).find(function (r) { return r.book_key === rec.bookKey; });
-        if (!remote || (rec.at || 0) > Date.parse(remote.updated_at || 0)) await cloudUpsertProgress(rec);
-      }
-    } catch (e) { if (!noteCloud(e)) console.warn("progress pull", e); }
-
     renderShelf();
     renderHome();
     targetParas().forEach(syncFlag);
   }
 
   function clearLocal() {
-    try {
-      localStorage.removeItem(LS_MARKS);
-      localStorage.removeItem(LS_PROG);
-    } catch (e) {}
+    try { localStorage.removeItem(LS_MARKS); } catch (e) {}
     marks = [];
-    progress = {};
     targetParas().forEach(syncFlag);
     renderShelf();
     renderHome();
@@ -569,8 +480,6 @@
       assignIds();
       placeFlags();
       renderShelf();
-      rememberProgress();
-      window.addEventListener("scroll", onScroll, { passive: true });
       const hash = location.hash.replace(/^#/, "");
       if (hash) {
         setTimeout(function () { jumpTo(decodeURIComponent(hash), true); }, 80);
